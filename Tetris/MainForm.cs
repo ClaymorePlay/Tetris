@@ -43,6 +43,8 @@ namespace Tetris
         /// <param name="e"></param>
         private void Form1_KeyDown(object sender, KeyEventArgs e)
         {
+            if (Field.CurrentShape?.BlockShape == true)
+                return;
             lock(_locker) 
             {
                 switch (e.KeyCode)

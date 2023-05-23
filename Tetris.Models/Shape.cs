@@ -17,14 +17,21 @@ namespace Tetris.Models
 
         public Square CenterSquare { get; set; }
 
+        /// <summary>
+        /// Блокировка падающей фигуры
+        /// </summary>
+        public bool BlockShape { get; set; }
+
 
         /// <summary>
         /// Движение вниз
         /// </summary>
         public bool MoveDown(Graphics graph, ConcurrentBag<Square> squares)
         {
-            lock (GameField._locker)
-            {
+            if (BlockShape == true)
+                return false;
+
+            BlockShape = true;
                 if (squares.Max(c => c.Y) == Squares.Max(c => c.Y))
                     return false;
 
@@ -56,8 +63,9 @@ namespace Tetris.Models
                 }
 
                 Squares = updateSquares;
+                BlockShape = false;
                 return true;
-            }
+            
         }
 
 
@@ -67,8 +75,11 @@ namespace Tetris.Models
         /// </summary>
         public bool MoveRight(Graphics graph, ConcurrentBag<Square> squares)
         {
-            lock (GameField._locker)
-            {
+            if (BlockShape == true)
+                return false;
+
+            BlockShape = true;
+            
                 if (squares.Max(c => c.Y) == Squares.Max(c => c.Y))
                     return false;
 
@@ -100,8 +111,9 @@ namespace Tetris.Models
                 }
 
                 Squares = updateSquares;
+                BlockShape = false;
                 return true;
-            }
+            
         }
 
         /// <summary>
@@ -109,8 +121,11 @@ namespace Tetris.Models
         /// </summary>
         public bool MoveLeft(Graphics graph, ConcurrentBag<Square> squares)
         {
-            lock (GameField._locker)
-            {
+            if (BlockShape == true)
+                return false;
+
+            BlockShape = true;
+            
                 if (squares.Max(c => c.Y) == Squares.Max(c => c.Y))
                     return false;
 
@@ -142,8 +157,9 @@ namespace Tetris.Models
                 }
 
                 Squares = updateSquares;
+                BlockShape = false;
                 return true;
-            }
+            
         }
 
 
@@ -154,8 +170,11 @@ namespace Tetris.Models
         /// <param name="squares"></param>
         public bool Rotate(Graphics graph, ConcurrentBag<Square> squares)
         {
-            lock (GameField._locker)
-            {
+            if (BlockShape == true)
+                return false;
+
+            BlockShape = true;
+            
                 double radians = 90 * (Math.PI / 180.0);
 
                 double sin = Math.Sin(radians);
@@ -199,11 +218,9 @@ namespace Tetris.Models
                 }
                 updateSquares.Add(CenterSquare);
                 Squares = updateSquares;
+                BlockShape = false;
                 return true;
-            }
-
+            
         }
-
-
     }
 }

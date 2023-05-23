@@ -19,7 +19,7 @@ namespace Tetris.Models
         {
             lock (_locker)
             {
-                graph.FillRectangle(new SolidBrush(System.Drawing.Color.Green), (int)X, (int)Y, 20, 20);
+                graph.FillRectangle(new SolidBrush(this.Color ?? System.Drawing.Color.Green), (int)X, (int)Y, 20, 20);
             }
         }
 
