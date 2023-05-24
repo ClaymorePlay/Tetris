@@ -94,10 +94,10 @@ namespace Tetris.Models
                 }
                 else
                     GenerateRandomShape();
-
-
-                _timer.Start();
             }
+            
+            _timer.Start();
+
         }
 
         /// <summary>
@@ -108,27 +108,37 @@ namespace Tetris.Models
             if (CurrentShape == null)
                 return;
 
-            foreach(var groupSquares in CurrentShape.Squares.GroupBy(c => c.Y).OrderByDescending(c => c.Key))
+            CurrentShape.BlockShape = true;
+
+            var groupedSquares = Squares.Where(c => CurrentShape.Squares.Select(c => c.Y).Contains(c.Y)).GroupBy(c => c.Y);
+
+            if (groupedSquares.Count() == 0 || !groupedSquares.Any(c => c.All(h => h.Color != null)))
             {
-                var square = groupSquares.First();
-                var valid = Squares.Where(c => c.Y == groupSquares.Key).All(c => c.Color.HasValue);
+                CurrentShape.BlockShape = false;
+                return;
+            }
+            var items = groupedSquares.Where(c => c.All(c => c.Color != null)).ToList();
+            foreach (var ySquares in items.SelectMany(c => c).OrderBy(c => c.Y))
+            {
+                ySquares.HideSquare(_graph);
 
-                if(valid)
+                var uppers = Squares.Where(c => c.X == ySquares.X && c.Y < ySquares.Y && c.Color != null);
+                foreach(var upper in uppers.OrderByDescending(c => c.Y))
                 {
-                    foreach (var item in Squares.Where(c => c.Y == groupSquares.Key))
-                        item.HideSquare(_graph);
+                    var next = Squares.FirstOrDefault(c => c.X == upper.X && c.Y == upper.Y + 20);
+                    if (next == null)
+                        continue;
 
-                    var upperSquares = Squares.Where(c => c.Y < groupSquares.Key).Where(c => c.Color.HasValue);
-                    foreach(var item in upperSquares)
-                    {
-                        item.HideSquare(_graph);
-                        var next = Squares.FirstOrDefault(c => c.X == item.X && c.Y == item.Y + 20);
-                        next?.ViewSquare(_graph);
-                    }
+                    next.Color = upper.Color;
+                    next.ViewSquare(_graph);
 
-                    OnCompleteLine?.Invoke(this, EventArgs.Empty);
+                    upper.HideSquare(_graph);
                 }
             }
+            foreach(var item in items)
+                OnCompleteLine?.Invoke(this, EventArgs.Empty);
+
+            CurrentShape.BlockShape = false; 
         }
 
         /// <summary>
