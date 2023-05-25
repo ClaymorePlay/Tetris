@@ -5,13 +5,13 @@ using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Tetris.Models.Enum;
+using Tetris.Models.Enums;
 
 namespace Tetris.Models
 {
     public class Shape
     {
-        public EnumShapeType Type { get; set; }
+        public ShapeTypeEnum Type { get; set; }
 
         public ConcurrentBag<Square> Squares { get; set; }
 
@@ -28,10 +28,12 @@ namespace Tetris.Models
         /// </summary>
         public bool MoveDown(Graphics graph, ConcurrentBag<Square> squares)
         {
-            if (BlockShape == true)
-                return false;
+            try
+            {
+                if (BlockShape == true)
+                    return false;
 
-            BlockShape = true;
+                BlockShape = true;
                 if (squares.Max(c => c.Y) == Squares.Max(c => c.Y))
                     return false;
 
@@ -63,9 +65,12 @@ namespace Tetris.Models
                 }
 
                 Squares = updateSquares;
-                BlockShape = false;
                 return true;
-            
+            }
+            finally
+            {
+                BlockShape = false;
+            }
         }
 
 
@@ -75,12 +80,14 @@ namespace Tetris.Models
         /// </summary>
         public bool MoveRight(Graphics graph, ConcurrentBag<Square> squares)
         {
-            if (BlockShape == true)
-                return false;
+            try
+            {
+                if (BlockShape == true)
+                    return false;
 
-            BlockShape = true;
-            
-                if (squares.Max(c => c.Y) == Squares.Max(c => c.Y))
+                BlockShape = true;
+
+                if (squares.Max(c => c.X) == Squares.Max(c => c.X))
                     return false;
 
                 var valid = Squares.All(c =>
@@ -111,9 +118,12 @@ namespace Tetris.Models
                 }
 
                 Squares = updateSquares;
-                BlockShape = false;
                 return true;
-            
+            }
+            finally
+            {
+                BlockShape = false;
+            }
         }
 
         /// <summary>
@@ -121,25 +131,28 @@ namespace Tetris.Models
         /// </summary>
         public bool MoveLeft(Graphics graph, ConcurrentBag<Square> squares)
         {
-            if (BlockShape == true)
-                return false;
-
-            BlockShape = true;
-            
-                if (squares.Max(c => c.Y) == Squares.Max(c => c.Y))
+            try
+            {
+                if (BlockShape == true)
                     return false;
+
+                BlockShape = true;
+                if (squares.Min(c => c.X) == Squares.Min(c => c.X))
+                    return false;
+                
 
                 var valid = Squares.All(c =>
                 {
                     var nextSquare = squares.FirstOrDefault(h => h.Y == c.Y && h.X == c.X - 20);
                     if (nextSquare == null || (nextSquare.Color.HasValue && !Squares.Contains(nextSquare)))
                         return false;
-
+                    
                     return true;
                 });
 
                 if (!valid)
                     return false;
+                
 
                 ConcurrentBag<Square> updateSquares = new ConcurrentBag<Square>();
                 foreach (var square in Squares.OrderBy(c => c.X))
@@ -157,9 +170,13 @@ namespace Tetris.Models
                 }
 
                 Squares = updateSquares;
-                BlockShape = false;
                 return true;
-            
+
+            }
+            finally
+            {
+                BlockShape = false;
+            }
         }
 
 
@@ -170,11 +187,13 @@ namespace Tetris.Models
         /// <param name="squares"></param>
         public bool Rotate(Graphics graph, ConcurrentBag<Square> squares)
         {
-            if (BlockShape == true)
-                return false;
+            try
+            {
+                if (BlockShape == true)
+                    return false;
 
-            BlockShape = true;
-            
+                BlockShape = true;
+
                 double radians = 90 * (Math.PI / 180.0);
 
                 double sin = Math.Sin(radians);
@@ -191,12 +210,12 @@ namespace Tetris.Models
                         return false;
 
 
+
                     return true;
                 });
 
                 if (!valid)
                     return false;
-
 
                 ConcurrentBag<Square> updateSquares = new ConcurrentBag<Square>();
                 foreach (var square in Squares.Where(c => c != CenterSquare))
@@ -208,7 +227,6 @@ namespace Tetris.Models
                     if (nextSquare == null)
                         continue;
 
-
                     nextSquare.Color = square.Color;
 
                     square.HideSquare(graph);
@@ -218,9 +236,12 @@ namespace Tetris.Models
                 }
                 updateSquares.Add(CenterSquare);
                 Squares = updateSquares;
-                BlockShape = false;
                 return true;
-            
+            }
+            finally
+            {
+                BlockShape = false;
+            }
         }
     }
 }

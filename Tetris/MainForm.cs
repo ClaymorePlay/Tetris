@@ -25,14 +25,10 @@ namespace Tetris
             InitializeComponent();
             _gr = this.CreateGraphics();
 
-            Field = new GameField(new GameOptions
-            {
-                Width = 10,
-                Height = 20,
-                TimerWalkShapeMs = 1500
-            },
-            _gr);
             KeyPreview = true;
+
+            if(File.Exists("./Save.txt"))
+                MaxScore.Text = File.ReadAllText("./Save.txt");
         }
         
 
@@ -67,6 +63,14 @@ namespace Tetris
 
         private void StartGameButton(object sender, EventArgs e)
         {
+            Field = new GameField(new GameOptions
+            {
+                Width = Convert.ToInt32(WidthField.Text),
+                Height = Convert.ToInt32(HeightField.Text),
+                TimerWalkShapeMs = Convert.ToInt32(TimeField.Text)
+            },
+            _gr) ;
+
             Field.OnCompleteLine += Field_OnCompleteLine;
             Field.BuildField();
             Field.DrawField();
@@ -90,8 +94,18 @@ namespace Tetris
                 this.Invoke(d, new object[] { text });
             }
             else
-                ScoresCount.Text = (Convert.ToInt32(ScoresCount.Text) + 100).ToString();
-            
+            {
+                var score = Convert.ToInt32(ScoresCount.Text) + 100;
+                ScoresCount.Text = score.ToString();
+
+                var max = Convert.ToInt32(MaxScore.Text);
+
+                if (max < score)
+                {
+                    MaxScore.Text = score.ToString();
+                    File.WriteAllText("./Save.txt", score.ToString());
+                }
+            }
         }
 
         private void Field_OnCompleteLine(object? sender, EventArgs e)

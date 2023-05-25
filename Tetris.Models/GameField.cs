@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Timers;
+using Tetris.Models.Enums;
 using Tetris.Options;
 using Timer = System.Timers.Timer;
 
@@ -63,8 +64,6 @@ namespace Tetris.Models
             Width = options.Width;
             Height = options.Height;
             _graph = graph;
-
-
 
             _timer = new Timer();
             _timer.AutoReset = false;
@@ -175,7 +174,7 @@ namespace Tetris.Models
         /// <param name="color"></param>
         /// <param name="coords"></param>
         /// <returns></returns>
-        private Shape BuildShape(Color color, params (int x, int y)[] coords)
+        private Shape BuildShape(Color color, ShapeTypeEnum type, params (int x, int y)[] coords)
         {
             var shape = new Shape() { Squares = new ConcurrentBag<Square>() };
             foreach(var coord in coords)
@@ -188,6 +187,7 @@ namespace Tetris.Models
             }
 
             shape.CenterSquare = shape.Squares.First();
+            shape.Type = type;
             return shape;
         }
 
@@ -201,25 +201,25 @@ namespace Tetris.Models
             switch (_rnd.Next(7))
             {
                 case 0:
-                    CurrentShape = BuildShape(randColor, (80, 0), (80, 20), (80, 40), (60, 40));
+                    CurrentShape = BuildShape(randColor, ShapeTypeEnum.J, (80, 0), (80, 20), (80, 40), (60, 40));
                     break;
                 case 1:
-                    CurrentShape = BuildShape(randColor, (80, 0), (80, 20), (80, 40), (80, 60));
+                    CurrentShape = BuildShape(randColor, ShapeTypeEnum.I, (80, 0), (80, 20), (80, 40), (80, 60));
                     break;
                 case 2:
-                    CurrentShape = BuildShape(randColor, (80, 0), (80, 20), (100, 0), (100, 20));
+                    CurrentShape = BuildShape(randColor, ShapeTypeEnum.O, (80, 0), (80, 20), (100, 0), (100, 20));
                     break;
                 case 3:
-                    CurrentShape = BuildShape(randColor, (80, 0), (80, 20), (80, 40), (100, 40));
+                    CurrentShape = BuildShape(randColor, ShapeTypeEnum.L, (80, 0), (80, 20), (80, 40), (100, 40));
                     break;
                 case 4:
-                    CurrentShape = BuildShape(randColor, (80, 0), (100, 0), (100, 20), (120, 20));
+                    CurrentShape = BuildShape(randColor, ShapeTypeEnum.Z, (80, 0), (100, 0), (100, 20), (120, 20));
                     break;
                 case 5:
-                    CurrentShape = BuildShape(randColor, (80, 0), (80, 20), (100, 20), (60, 20));
+                    CurrentShape = BuildShape(randColor, ShapeTypeEnum.T, (80, 0), (80, 20), (100, 20), (60, 20));
                     break;
                 case 6:
-                    CurrentShape = BuildShape(randColor, (80, 20), (100, 20), (100, 0), (120, 0));
+                    CurrentShape = BuildShape(randColor, ShapeTypeEnum.S, (80, 20), (100, 20), (100, 0), (120, 0));
                     break;
             }
         }
