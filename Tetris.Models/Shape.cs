@@ -11,10 +11,19 @@ namespace Tetris.Models
 {
     public class Shape
     {
+        /// <summary>
+        /// Тип фигуры
+        /// </summary>
         public ShapeTypeEnum Type { get; set; }
 
+        /// <summary>
+        /// Квадраты из которых состоит фигура
+        /// </summary>
         public ConcurrentBag<Square> Squares { get; set; }
 
+        /// <summary>
+        /// Центральный квадрат относительно которого производится поворот
+        /// </summary>
         public Square CenterSquare { get; set; }
 
         /// <summary>
@@ -28,11 +37,10 @@ namespace Tetris.Models
         /// </summary>
         public bool MoveDown(Graphics graph, ConcurrentBag<Square> squares)
         {
-            try
-            {
                 if (BlockShape == true)
                     return false;
-
+            try
+            {
                 BlockShape = true;
                 if (squares.Max(c => c.Y) == Squares.Max(c => c.Y))
                     return false;
@@ -80,11 +88,12 @@ namespace Tetris.Models
         /// </summary>
         public bool MoveRight(Graphics graph, ConcurrentBag<Square> squares)
         {
-            try
-            {
+           
                 if (BlockShape == true)
                     return false;
 
+            try
+            {
                 BlockShape = true;
 
                 if (squares.Max(c => c.X) == Squares.Max(c => c.X))
@@ -131,11 +140,12 @@ namespace Tetris.Models
         /// </summary>
         public bool MoveLeft(Graphics graph, ConcurrentBag<Square> squares)
         {
-            try
-            {
+            
                 if (BlockShape == true)
                     return false;
 
+            try
+            {
                 BlockShape = true;
                 if (squares.Min(c => c.X) == Squares.Min(c => c.X))
                     return false;
@@ -187,35 +197,34 @@ namespace Tetris.Models
         /// <param name="squares"></param>
         public bool Rotate(Graphics graph, ConcurrentBag<Square> squares)
         {
-            try
-            {
                 if (BlockShape == true)
                     return false;
-
+            try
+            {
                 BlockShape = true;
 
                 double radians = 90 * (Math.PI / 180.0);
 
-                double sin = Math.Sin(radians);
-                double cos = Math.Cos(radians);
+                //double sin = Math.Sin(radians);
+                //double cos = Math.Cos(radians);
 
-                var valid = Squares.All(c =>
-                {
-                    var nextSquare = squares.FirstOrDefault(h => h.Y == c.Y && h.X == c.X - 20);
-                    if (nextSquare == null || (nextSquare.Color.HasValue && !Squares.Contains(nextSquare)))
-                        return false;
-                    if (nextSquare == null || (nextSquare.Color.HasValue && !Squares.Contains(nextSquare)))
-                        return false;
-                    if (nextSquare == null || (nextSquare.Color.HasValue && !Squares.Contains(nextSquare)))
-                        return false;
+                //var valid = Squares.All(c =>
+                //{
+                //    var nextSquare = squares.FirstOrDefault(h => h.Y == c.Y && h.X == c.X - 20);
+                //    if (nextSquare == null || (nextSquare.Color.HasValue && !Squares.Contains(nextSquare)))
+                //        return false;
+                //    if (nextSquare == null || (nextSquare.Color.HasValue && !Squares.Contains(nextSquare)))
+                //        return false;
+                //    if (nextSquare == null || (nextSquare.Color.HasValue && !Squares.Contains(nextSquare)))
+                //        return false;
 
+ 
 
+                //    return true;
+                //});
 
-                    return true;
-                });
-
-                if (!valid)
-                    return false;
+                //if (!valid)
+                //    return false;
 
                 ConcurrentBag<Square> updateSquares = new ConcurrentBag<Square>();
                 foreach (var square in Squares.Where(c => c != CenterSquare))
@@ -225,6 +234,9 @@ namespace Tetris.Models
 
                     var nextSquare = squares.FirstOrDefault(h => h.Y == newY && h.X == newX);
                     if (nextSquare == null)
+                        continue;
+
+                    if (nextSquare.Color.HasValue && Squares.Contains(nextSquare))
                         continue;
 
                     nextSquare.Color = square.Color;

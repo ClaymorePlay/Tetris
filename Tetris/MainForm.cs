@@ -61,6 +61,11 @@ namespace Tetris
             }
         }
 
+        /// <summary>
+        /// Обработчик нажатия на кнопку начала игры
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void StartGameButton(object sender, EventArgs e)
         {
             Field = new GameField(new GameOptions
@@ -79,7 +84,10 @@ namespace Tetris
 
         }
 
-
+        /// <summary>
+        /// Делегат для выхода из потока
+        /// </summary>
+        /// <param name="text"></param>
         delegate void SetTextCallback(int text);
 
         /// <summary>
