@@ -202,35 +202,31 @@ namespace Tetris.Models
             try
             {
                 BlockShape = true;
-
                 double radians = 90 * (Math.PI / 180.0);
+                double sin = Math.Sin(radians);
+                double cos = Math.Cos(radians);
 
-                //double sin = Math.Sin(radians);
-                //double cos = Math.Cos(radians);
+                var valid = Squares.Where(square => square != CenterSquare).All(square =>
+                {
+                    var newX = (square.X - CenterSquare.X) * cos - (square.Y - CenterSquare.Y) * sin + CenterSquare.X;
+                    var newY = (square.X - CenterSquare.X) * sin + (square.Y - CenterSquare.Y) * cos + CenterSquare.Y;
 
-                //var valid = Squares.All(c =>
-                //{
-                //    var nextSquare = squares.FirstOrDefault(h => h.Y == c.Y && h.X == c.X - 20);
-                //    if (nextSquare == null || (nextSquare.Color.HasValue && !Squares.Contains(nextSquare)))
-                //        return false;
-                //    if (nextSquare == null || (nextSquare.Color.HasValue && !Squares.Contains(nextSquare)))
-                //        return false;
-                //    if (nextSquare == null || (nextSquare.Color.HasValue && !Squares.Contains(nextSquare)))
-                //        return false;
+                    if (newX < squares.Min(c => c.X) || newY < squares.Min(c => c.Y) || newX > squares.Max(c => c.X) || newY > squares.Max(c => c.Y))
+                        return false;
+                    if (squares.FirstOrDefault(c => c.X == newX && c.Y == newY)?.Color != null)
+                        return false;
 
- 
+                    return true;
+                });
 
-                //    return true;
-                //});
-
-                //if (!valid)
-                //    return false;
+                if (!valid)
+                    return false;
 
                 ConcurrentBag<Square> updateSquares = new ConcurrentBag<Square>();
                 foreach (var square in Squares.Where(c => c != CenterSquare))
                 {
-                    var newX = (square.X - CenterSquare.X) * Math.Cos(radians) - (square.Y - CenterSquare.Y) * Math.Sin(radians) + CenterSquare.X;
-                    var newY = (square.X - CenterSquare.X) * Math.Sin(radians) + (square.Y - CenterSquare.Y) * Math.Cos(radians) + CenterSquare.Y;
+                    var newX = (square.X - CenterSquare.X) * cos - (square.Y - CenterSquare.Y) * sin + CenterSquare.X;
+                    var newY = (square.X - CenterSquare.X) * sin + (square.Y - CenterSquare.Y) * cos + CenterSquare.Y;
 
                     var nextSquare = squares.FirstOrDefault(h => h.Y == newY && h.X == newX);
                     if (nextSquare == null)
@@ -240,10 +236,8 @@ namespace Tetris.Models
                         continue;
 
                     nextSquare.Color = square.Color;
-
                     square.HideSquare(graph);
                     nextSquare.ViewSquare(graph);
-
                     updateSquares.Add(nextSquare);
                 }
                 updateSquares.Add(CenterSquare);

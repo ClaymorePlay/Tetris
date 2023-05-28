@@ -18,42 +18,30 @@ namespace Tetris.Models
         /// Щирина
         /// </summary>
         public double Width { get; set; }
-
         /// <summary>
         /// Высота
         /// </summary>
         public double Height { get; set; }  
-
         /// <summary>
         /// Падающая фигура
         /// </summary>
         public Shape? CurrentShape { get; set; }
-
         /// <summary>
         /// Квадраты
         /// </summary>
         public ConcurrentBag<Square> Squares { get; set; } = new ConcurrentBag<Square>();
-
         /// <summary>
         /// Таймер
         /// </summary>
         private Timer _timer { get; set; }
-
         /// <summary>
         /// Генератор случайных чисел
         /// </summary>
         private Random _rnd = new Random(DateTime.Now.Millisecond);
-
         /// <summary>
         /// Объект графики
         /// </summary>
         private Graphics _graph { get; set; }
-
-        /// <summary>
-        /// Блокатор
-        /// </summary>
-        public static object _locker = new object();
-
         /// <summary>
         /// Событие завершения заполнения полосы
         /// </summary>
@@ -80,20 +68,18 @@ namespace Tetris.Models
         /// <exception cref="NotImplementedException"></exception>
         private void _timer_Elapsed(object? sender, ElapsedEventArgs e)
         {
-            lock (_locker)
+            if (CurrentShape != null)
             {
-                if (CurrentShape != null)
+                var valid = CurrentShape?.MoveDown(_graph, Squares);
+                if (valid == false)
                 {
-                    var valid = CurrentShape?.MoveDown(_graph, Squares);
-                    if (valid == false)
-                    {
-                        CheckLine();
-                        CurrentShape = null;
-                    }
+                    CheckLine();
+                    CurrentShape = null;
                 }
-                else
-                    GenerateRandomShape();
             }
+            else
+                GenerateRandomShape();
+            
             
             _timer.Start();
 
@@ -258,7 +244,6 @@ namespace Tetris.Models
                     _graph.FillRectangle(new SolidBrush(square.Color.Value), (int)square.X, (int)square.Y, 20, 20);
 
             }
-            //GenerateRandomShape();
             _timer.Start();
         }
     }
