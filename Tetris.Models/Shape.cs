@@ -38,7 +38,7 @@ namespace Tetris.Models
         public bool MoveDown(Graphics graph, ConcurrentBag<Square> squares)
         {
                 if (BlockShape == true)
-                    return false;
+                    return true;
             try
             {
                 BlockShape = true;
@@ -90,7 +90,7 @@ namespace Tetris.Models
         {
            
                 if (BlockShape == true)
-                    return false;
+                    return true;
 
             try
             {
@@ -142,7 +142,7 @@ namespace Tetris.Models
         {
             
                 if (BlockShape == true)
-                    return false;
+                    return true;
 
             try
             {
@@ -198,7 +198,7 @@ namespace Tetris.Models
         public bool Rotate(Graphics graph, ConcurrentBag<Square> squares)
         {
                 if (BlockShape == true)
-                    return false;
+                    return true;
             try
             {
                 BlockShape = true;

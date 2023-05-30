@@ -7,24 +7,6 @@ namespace Tetris.Test
     [TestClass]
     public class ShapeTests
     {
-        private List<Square> CreateField(int width, int height)
-        {
-            var result = new List<Square>();
-            for(var i = 0; i < width * 20; i += 20)
-            {
-                for(var j = 0; j < height * 20; j += 20)
-                {
-                    result.Add(new Square
-                    {
-                        X = i,
-                        Y = j,
-                        Color = null
-                    });
-                }
-            }
-            return result;
-        }
-
         [TestMethod]
         [DataRow(5, true)]
         [DataRow(10, false)]
@@ -51,6 +33,24 @@ namespace Tetris.Test
 
             if(!block)
                 Assert.IsFalse(shape.BlockShape);
+        }
+
+        private List<Square> CreateField(int width, int height)
+        {
+            var result = new List<Square>();
+            for (var i = 0; i < width * 20; i += 20)
+            {
+                for (var j = 0; j < height * 20; j += 20)
+                {
+                    result.Add(new Square
+                    {
+                        X = i,
+                        Y = j,
+                        Color = null
+                    });
+                }
+            }
+            return result;
         }
 
         [TestMethod]
